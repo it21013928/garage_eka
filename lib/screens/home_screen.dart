@@ -6,8 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:garage_eka/screens/viewport.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin(); // Define the flutterLocalNotificationsPlugin as a global variable
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin(); // Define the flutterLocalNotificationsPlugin as a global variable
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -19,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
 
+
   List<Map<String, dynamic>> carData = [];
 
   @override
@@ -26,18 +26,15 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     printCarData(user?.uid);
   }
-
   Future<void> _showNotification() async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
+    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'your_channel_id', // Replace with your channel ID
       'Channel Name', // Replace with your channel name
       importance: Importance.max,
       priority: Priority.high,
     );
 
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
       0, // Notification ID
@@ -62,16 +59,14 @@ class _HomeScreenState extends State<HomeScreen> {
           data['dID'] = document.id;
           DocumentReference modelReference = data['model'];
           DocumentSnapshot modelSnapshot = await modelReference.get();
-          Map<String, dynamic> modelData =
-              modelSnapshot.data() as Map<String, dynamic>;
+          Map<String, dynamic> modelData = modelSnapshot.data() as Map<String, dynamic>;
 
           DocumentReference manufacturerReference = modelData['manufacturer'];
-          DocumentSnapshot manufacturerSnapshot =
-              await manufacturerReference.get();
-          Map<String, dynamic> manufacturerData =
-              manufacturerSnapshot.data() as Map<String, dynamic>;
+          DocumentSnapshot manufacturerSnapshot = await manufacturerReference.get();
+          Map<String, dynamic> manufacturerData = manufacturerSnapshot.data() as Map<String, dynamic>;
 
           data['modelName'] = modelData['name'];
+          data['modelImage'] = modelData['image'];
           data['manufacturerName'] = manufacturerData['name'];
 
           carDataList.add(data);
@@ -110,61 +105,58 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: carData.isEmpty
           ? Center(
-              child: carData.isEmpty
-                  ? Text('No vehicle added')
-                  : CircularProgressIndicator(),
-            )
+        child: carData.isEmpty
+            ? Text('No vehicle added')
+            : CircularProgressIndicator(),
+      )
           : ListView.builder(
-              itemCount: carData.length,
-              itemBuilder: (context, index) {
-                Map<String, dynamic> data = carData[index];
-                return GestureDetector(
-                  onTap: () {
-                    Map<String, dynamic> arguments = {
-                      'Insurance':
-                          '${dateFormat.format(data['Insurance-expiration-date'].toDate().toLocal())}',
-                      'license':
-                          '${dateFormat.format(data['license-expiration-date'].toDate().toLocal())}',
-                      'service':
-                          '${dateFormat.format(data['next-service-date'].toDate().toLocal())}',
-                      'Model': '${data['modelName']}',
-                      'Manufacture': '${data['manufacturerName']}',
-                      'DID': '${data['dID']}',
-                    };
+        itemCount: carData.length,
+        itemBuilder: (context, index) {
+          Map<String, dynamic> data = carData[index];
+          return GestureDetector(
+            onTap: () {
+              Map<String, dynamic> arguments = {
+                'Insurance': '${dateFormat.format(data['Insurance-expiration-date'].toDate().toLocal())}',
+                'license': '${dateFormat.format(data['license-expiration-date'].toDate().toLocal())}',
+                'service': '${dateFormat.format(data['next-service-date'].toDate().toLocal())}',
+                'Model': '${data['modelName']}',
+                'Manufacture': '${data['manufacturerName']}',
+                'DID': '${data['dID']}',
+              };
 
-                    Navigator.pushNamed(
-                      context,
-                      '/view_port',
-                      arguments: arguments,
-                    );
-                  },
-                  child: Card(
-                    elevation: 3,
-                    margin: EdgeInsets.only(left: 20, right: 20, top: 20),
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Image.network(
-                            data[''],
-                            fit: BoxFit.cover,
-                          ),
-                          Text(
-                              '\nInsurance Expiration Date: ${dateFormat.format(data['Insurance-expiration-date'].toDate().toLocal())}\n'),
-                          Text(
-                              'License Expiration Date: ${dateFormat.format(data['license-expiration-date'].toDate().toLocal())}\n'),
-                          Text(
-                              'Next Service Date: ${dateFormat.format(data['next-service-date'].toDate().toLocal())}\n'),
-                          Text(
-                              '${data['manufacturerName']}/${data['modelName']}'),
-                        ],
-                      ),
+              Navigator.pushNamed(
+                context,
+                '/view_port',
+                arguments: arguments,
+              );
+            },
+
+            child: Card(
+              elevation: 3,
+              margin: EdgeInsets.only(left: 20,right: 20,top: 20),
+
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Image.network(
+                      data['modelImage'],
+                      fit: BoxFit.cover,
                     ),
-                  ),
-                );
-              },
+                    Text('\nInsurance Expiration Date: ${dateFormat.format(data['Insurance-expiration-date'].toDate().toLocal())}\n'),
+                    Text('License Expiration Date: ${dateFormat.format(data['license-expiration-date'].toDate().toLocal())}\n'),
+                    Text('Next Service Date: ${dateFormat.format(data['next-service-date'].toDate().toLocal())}\n'),
+                    Text('${data['manufacturerName']}/${data['modelName']}'),
+
+
+                  ],
+                ),
+              ),
             ),
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.pushReplacementNamed(context, '/manufacture');
