@@ -15,13 +15,15 @@ import 'package:garage_eka/screens/viewport.dart';
 import 'package:garage_eka/screens/edit_carport.dart';
 import 'package:garage_eka/services_center/add.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
-  
   WidgetsFlutterBinding.ensureInitialized();
   final InitializationSettings initializationSettings = InitializationSettings(
-    android: AndroidInitializationSettings('@mipmap/ic_launcher'), // Replace with your app's icon
+    android: AndroidInitializationSettings(
+        '@mipmap/ic_launcher'), // Replace with your app's icon
   );
 
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
@@ -59,14 +61,14 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegistrationScreen(),
         '/home': (context) => HomeScreen(),
-         '/profile': (context) => ProfileScreen(),
-          '/edit_profile': (context) => EditProfileScreen(),
-          '/manufacture': (context) => ManufactureScreen(),
-           '/model': (context) => ModelScreen(),
-           '/reminder': (context) => ReminderScreen(),
-           '/view_port': (context) => ViewPortScreen(),
-          '/edit_port': (context) => EditCarportScreen(),
-          '/appointments': (context) => Add(),
+        '/profile': (context) => ProfileScreen(),
+        '/edit_profile': (context) => EditProfileScreen(),
+        '/manufacture': (context) => ManufactureScreen(),
+        '/model': (context) => ModelScreen(),
+        '/reminder': (context) => ReminderScreen(),
+        '/view_port': (context) => ViewPortScreen(),
+        '/edit_port': (context) => EditCarportScreen(),
+        '/appointments': (context) => Add(),
       },
     );
   }

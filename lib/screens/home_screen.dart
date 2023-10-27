@@ -6,7 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:garage_eka/screens/viewport.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin(); // Define the flutterLocalNotificationsPlugin as a global variable
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin(); // Define the flutterLocalNotificationsPlugin as a global variable
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -17,7 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final User? user = FirebaseAuth.instance.currentUser;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
-  
 
   List<Map<String, dynamic>> carData = [];
 
@@ -26,23 +26,26 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     printCarData(user?.uid);
   }
-Future<void> _showNotification() async {
-  const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
-    'your_channel_id', // Replace with your channel ID
-    'Channel Name', // Replace with your channel name
-    importance: Importance.max,
-    priority: Priority.high,
-  );
 
-  const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-  
-  await flutterLocalNotificationsPlugin.show(
-    0, // Notification ID
-    'Notification Title', // Notification title
-    'Notification Body', // Notification body
-    platformChannelSpecifics,
-  );
-}
+  Future<void> _showNotification() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'your_channel_id', // Replace with your channel ID
+      'Channel Name', // Replace with your channel name
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // Notification ID
+      'Notification Title', // Notification title
+      'Notification Body', // Notification body
+      platformChannelSpecifics,
+    );
+  }
 
   Future<void> printCarData(uuserid) async {
     try {
@@ -59,11 +62,14 @@ Future<void> _showNotification() async {
           data['dID'] = document.id;
           DocumentReference modelReference = data['model'];
           DocumentSnapshot modelSnapshot = await modelReference.get();
-          Map<String, dynamic> modelData = modelSnapshot.data() as Map<String, dynamic>;
+          Map<String, dynamic> modelData =
+              modelSnapshot.data() as Map<String, dynamic>;
 
           DocumentReference manufacturerReference = modelData['manufacturer'];
-          DocumentSnapshot manufacturerSnapshot = await manufacturerReference.get();
-          Map<String, dynamic> manufacturerData = manufacturerSnapshot.data() as Map<String, dynamic>;
+          DocumentSnapshot manufacturerSnapshot =
+              await manufacturerReference.get();
+          Map<String, dynamic> manufacturerData =
+              manufacturerSnapshot.data() as Map<String, dynamic>;
 
           data['modelName'] = modelData['name'];
           data['manufacturerName'] = manufacturerData['name'];
@@ -103,52 +109,55 @@ Future<void> _showNotification() async {
         ],
       ),
       body: carData.isEmpty
-    ? Center(
-        child: carData.isEmpty
-            ? Text('No vehicle added')
-            : CircularProgressIndicator(),
-      )
+          ? Center(
+              child: carData.isEmpty
+                  ? Text('No vehicle added')
+                  : CircularProgressIndicator(),
+            )
           : ListView.builder(
               itemCount: carData.length,
               itemBuilder: (context, index) {
                 Map<String, dynamic> data = carData[index];
                 return GestureDetector(
                   onTap: () {
-                   Map<String, dynamic> arguments = {
-      'Insurance': '${dateFormat.format(data['Insurance-expiration-date'].toDate().toLocal())}',
-      'license': '${dateFormat.format(data['license-expiration-date'].toDate().toLocal())}',
-      'service': '${dateFormat.format(data['next-service-date'].toDate().toLocal())}',
-      'Model': '${data['modelName']}',
-      'Manufacture': '${data['manufacturerName']}',
-      'DID': '${data['dID']}',
-    };
+                    Map<String, dynamic> arguments = {
+                      'Insurance':
+                          '${dateFormat.format(data['Insurance-expiration-date'].toDate().toLocal())}',
+                      'license':
+                          '${dateFormat.format(data['license-expiration-date'].toDate().toLocal())}',
+                      'service':
+                          '${dateFormat.format(data['next-service-date'].toDate().toLocal())}',
+                      'Model': '${data['modelName']}',
+                      'Manufacture': '${data['manufacturerName']}',
+                      'DID': '${data['dID']}',
+                    };
 
-    Navigator.pushNamed(
-      context,
-      '/view_port',
-      arguments: arguments,
-    );
+                    Navigator.pushNamed(
+                      context,
+                      '/view_port',
+                      arguments: arguments,
+                    );
                   },
-                  
                   child: Card(
                     elevation: 3,
-                      margin: EdgeInsets.only(left: 20,right: 20,top: 20),
-                      
+                    margin: EdgeInsets.only(left: 20, right: 20, top: 20),
                     child: Padding(
                       padding: EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Image.network(
-                            'https://pettagama.lk/wp-content/uploads/2023/10/Screenshot-2021-12-01-at-2.48-1-1.png',
+                            data[''],
                             fit: BoxFit.cover,
                           ),
-                          Text('\nInsurance Expiration Date: ${dateFormat.format(data['Insurance-expiration-date'].toDate().toLocal())}\n'),
-                          Text('License Expiration Date: ${dateFormat.format(data['license-expiration-date'].toDate().toLocal())}\n'),
-                          Text('Next Service Date: ${dateFormat.format(data['next-service-date'].toDate().toLocal())}\n'),
-                          Text('${data['manufacturerName']}/${data['modelName']}'),
-                         
-
+                          Text(
+                              '\nInsurance Expiration Date: ${dateFormat.format(data['Insurance-expiration-date'].toDate().toLocal())}\n'),
+                          Text(
+                              'License Expiration Date: ${dateFormat.format(data['license-expiration-date'].toDate().toLocal())}\n'),
+                          Text(
+                              'Next Service Date: ${dateFormat.format(data['next-service-date'].toDate().toLocal())}\n'),
+                          Text(
+                              '${data['manufacturerName']}/${data['modelName']}'),
                         ],
                       ),
                     ),
@@ -172,7 +181,7 @@ Future<void> _showNotification() async {
             IconButton(
               icon: Icon(FontAwesomeIcons.home, color: Color(0xFF707477)),
               onPressed: () {
-               Navigator.pushReplacementNamed(context, '/home');
+                Navigator.pushReplacementNamed(context, '/home');
               },
               tooltip: 'Home',
             ),
